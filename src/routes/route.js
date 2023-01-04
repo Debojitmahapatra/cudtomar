@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const {createCustomer,getCustomar} = require("../controller/customer")
+const {createCustomer} = require("../controller/customer")
 const {createOrder} = require("../controller/order")
+const {getCustomar}=require("../controller/admin")
 
 router.get("/customer",getCustomar)
 router.post("/customer",createCustomer)

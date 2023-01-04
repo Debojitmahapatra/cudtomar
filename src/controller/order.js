@@ -6,7 +6,7 @@ module.exports.createOrder=async function(req,res){
   try{
     let data = req.body
     if (!valid.isValidRequestBody(data)) { return res.status(400).send({ status: false, message: "Please enter details in the request " }) }
-    let {productName,price,customerID,cardType}=data
+    let {customerID,productName,price,cardType}=data
    
     if (!valid.isValid(customerID)) {
         return res.status(400).send({ status: false, message: "Please enter a customerID" })
@@ -14,7 +14,7 @@ module.exports.createOrder=async function(req,res){
       if (!valid.isValidObjectId(customerID)) {
         return res.status(400).send({ status: false, message: "Please enter a valid customerID" })
       }
-      const isUniqueCustomerID= await CustomerModel.findOne({ customerID: customerID });
+      const isUniqueCustomerID= await CustomerModel.findById( customerID );
       if (!isUniqueCustomerID) { return res.status(400).send({ status: false, message: "Please enter a real Customer" }) }
 
     if (!valid.isValid(productName)) {
@@ -26,7 +26,7 @@ module.exports.createOrder=async function(req,res){
         return res.status(400).send({ status: false, message: "Please enter a price" })
       }
       let checkCustomer=await CustomerModel.findById(customerID)
-    
+    console.log(checkCustomer);
       let currPrice
       if(checkCustomer.categorized=="gold"){
         currPrice=(price-(price*10/100))
@@ -40,11 +40,11 @@ module.exports.createOrder=async function(req,res){
       let savedData = await orderModel.create(finelresult)
 
       await CustomerModel.findByIdAndUpdate({_id:customerID},{$inc:{orderCount:1}})
-      if(checkCustomer.orderCount>=10&&checkCustomer.orderCount<20){
-        await CustomerModel.findByIdAndUpdate({_id:customerID},{$set:{categorized:"gold"}})
+      if(checkCustomer.orderCount+1>=10&&checkCustomer.orderCount+1<20){
+        await CustomerModel.findByIdAndUpdate({_id:customerID},{$set:{categorized:"gold",cashback: checkCustomer.cashback+(price- currPrice)}})
         
-      }else if(checkCustomer.orderCount>=20){
-        await CustomerModel.findByIdAndUpdate({_id:customerID},{$set:{categorized:"platinum"}})
+      }else if(checkCustomer.orderCount+1>=20){
+        await CustomerModel.findByIdAndUpdate({_id:customerID},{$set:{categorized:"platinum",cashback: checkCustomer.cashback+(price- currPrice)}})
       }
        res.status(201).send({ status: true, data: savedData })
       }

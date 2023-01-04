@@ -5,7 +5,7 @@ const mongoose= require('mongoose');
 const app = express();
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://debojit:rJuLc4nyipWKU6tV@cluster1.31noc.mongodb.net/customer", {
+mongoose.connect("mongodb+srv://debojit:rJuLc4nyipWKU6tV@cluster1.31noc.mongodb.net/customer-creation", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
