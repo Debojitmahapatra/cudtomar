@@ -26,11 +26,20 @@ module.exports.getCustomar=async function(req,res){
         res.status(500).send({ error: err.message })
     }
 }
-// module.exports.getCashback=async function(req,res){
-//     try{
-    
+module.exports.getCashback=async function(req,res){
+    try{
+    let data=req.params
+    let customerId = req.params.customerId
+    customerId = customerId.trim()
+    const checkUser = await CustomerModel.findById(customerId)
 
-//     }catch(err){
-//         res.status(500).send({ error: err.message })
-//     }
-// }
+    if (!checkUser) return res.status(404).send({ status: false, message: "No user found" })
+ 
+
+
+    return res.status(200).send({ status: true, message: 'Users cashback', data: checkUser.cashback });
+
+    }catch(err){
+        res.status(500).send({ error: err.message })
+    }
+}
